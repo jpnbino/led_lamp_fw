@@ -1,0 +1,12 @@
+#gitignore file
+*.zip
+*.rar
+*.html
+*.o
+/build/
+/*.X/build/
+/*.X/dist/
+/*.X/nbproject/Makefile-*
+/*.X/nbproject/private/
+/*.X/nbproject/Package-default.bash
+/*.X/mcc_generated_files/
