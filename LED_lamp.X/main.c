@@ -42,7 +42,7 @@
 */
 
 #include "mcc_generated_files/mcc.h"
-
+#include "soft_pwm.h"
 /*
                          Main application
  */
@@ -51,37 +51,37 @@ void main(void)
     // initialize the device
     SYSTEM_Initialize();
 
+    Soft_PWM_Init();
+     
+    Soft_PWM_Set_Duty(PWM_CHANNEL1, 250);
+    
+    Soft_PWM_Set_Duty(PWM_CHANNEL2, 250);   
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
     // Use the following macros to:
 
     // Enable the Global Interrupts
-    //INTERRUPT_GlobalInterruptEnable();
-
+    INTERRUPT_GlobalInterruptEnable();
+    
     // Enable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptEnable();
+    INTERRUPT_PeripheralInterruptEnable();
 
     // Disable the Global Interrupts
     //INTERRUPT_GlobalInterruptDisable();
 
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
+    
 
+    
     while (1)
     {
-        // Add your application code
-        IO_RA4_SetHigh();
-        DELAY_milliseconds(  500 );
-        IO_RA4_SetLow();
+        CLRWDT();
         
-        IO_RA5_SetHigh();
-        DELAY_milliseconds(  500 );
+        //IO_RA5_SetHigh();
+        DELAY_microseconds(1);
+    
         IO_RA5_SetLow();
-        
-        IO_RA5_SetHigh();
-        IO_RA4_SetHigh();
-        DELAY_milliseconds(  500 );
-        IO_RA5_SetLow();
-        IO_RA4_SetLow();
+        DELAY_milliseconds(10); 
     }
 }
 /**
