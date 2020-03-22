@@ -50,12 +50,14 @@ void main(void)
 {
     // initialize the device
     SYSTEM_Initialize();
-
-    Soft_PWM_Init();
-     
-    Soft_PWM_Set_Duty(PWM_CHANNEL1, 250);
     
-    Soft_PWM_Set_Duty(PWM_CHANNEL2, 250);   
+    
+    IO_RA5_SetHigh();
+    DELAY_milliseconds(200);
+    IO_RA5_SetLow();
+    
+    Soft_PWM_Init();
+       
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
     // Use the following macros to:
 
@@ -72,16 +74,33 @@ void main(void)
     //INTERRUPT_PeripheralInterruptDisable();
     
 
+    static uint16_t i = 0;
+    pwm_channel_t pwm_channel = PWM_CHANNEL1;
     
     while (1)
     {
         CLRWDT();
-        
-        //IO_RA5_SetHigh();
-        DELAY_microseconds(1);
-    
-        IO_RA5_SetLow();
-        DELAY_milliseconds(10); 
+         
+        if ( i <= 255)
+        {
+            i++;
+            Soft_PWM_Set_Duty(pwm_channel, i);
+            DELAY_milliseconds(10);
+        }
+        else
+        {
+            i = 0;
+            DELAY_milliseconds(100);
+            Soft_PWM_Set_Duty(pwm_channel, i);
+            DELAY_milliseconds(100);
+            
+            pwm_channel++;
+            
+            if (pwm_channel >= PWM_CHANNEL_MAX  )
+            {
+                pwm_channel = PWM_CHANNEL1;
+            }
+        }      
     }
 }
 /**
