@@ -76,7 +76,7 @@ button_state_t Button_Read_State ( button_channel_t channel )
 
 button_event_t Button_Scan  ( button_channel_t channel )
 {
-    static button_state_t current_button_state, previous_button_state;
+    static button_state_t current_button_state = BUTTON_STATE_HIGH, previous_button_state;
 
     if ( channel >= BUTTON_CHANNEL_MAX )
     {
