@@ -44,6 +44,7 @@
 #include "mcc_generated_files/mcc.h"
 #include "soft_pwm.h"
 #include "driver_button.h"
+#include "book_lamp_app.h"
 /*
                          Main application
  */
@@ -83,42 +84,7 @@ void main(void)
     while (1)
     {
         CLRWDT();
-        Button_Scan( 0 );
-        
-        if ( Button_Get_Pressed_Event() == BUTTON_EVENT_PRESSED)
-        {
-            Soft_PWM_Set_Duty(pwm_channel, 100);
-        }
-
-        if ( Button_Get_Released_Event() == BUTTON_EVENT_RELEASED)
-        {
-            Soft_PWM_Set_Duty(pwm_channel, 0);
-        }
-        
-        Button_Clear_Events();
-        
-#if 0 
-        if ( i <= 255)
-        {
-            i++;
-            Soft_PWM_Set_Duty(pwm_channel, i);
-            DELAY_milliseconds(10);
-        }
-        else
-        {
-            i = 0;
-            DELAY_milliseconds(100);
-            Soft_PWM_Set_Duty(pwm_channel, i);
-            DELAY_milliseconds(100);
-            
-            pwm_channel++;
-            
-            if (pwm_channel >= PWM_CHANNEL_MAX  )
-            {
-                pwm_channel = PWM_CHANNEL1;
-            }
-        }
-#endif
+        Book_Lamp_App();
     }
 }
 /**
