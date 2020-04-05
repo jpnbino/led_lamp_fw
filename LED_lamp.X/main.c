@@ -43,6 +43,7 @@
 
 #include "mcc_generated_files/mcc.h"
 #include "soft_pwm.h"
+#include "driver_button.h"
 /*
                          Main application
  */
@@ -56,6 +57,7 @@ void main(void)
     DELAY_milliseconds(200);
     IO_RA5_SetLow();
     
+    Button_Driver_Init();
     Soft_PWM_Init();
        
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
@@ -77,10 +79,25 @@ void main(void)
     static uint16_t i = 0;
     pwm_channel_t pwm_channel = PWM_CHANNEL1;
     
+    
     while (1)
     {
         CLRWDT();
-         
+        Button_Scan( 0 );
+        
+        if ( Button_Get_Pressed_Event() == BUTTON_EVENT_PRESSED)
+        {
+            Soft_PWM_Set_Duty(pwm_channel, 100);
+        }
+
+        if ( Button_Get_Released_Event() == BUTTON_EVENT_RELEASED)
+        {
+            Soft_PWM_Set_Duty(pwm_channel, 0);
+        }
+        
+        Button_Clear_Events();
+        
+#if 0 
         if ( i <= 255)
         {
             i++;
@@ -100,7 +117,8 @@ void main(void)
             {
                 pwm_channel = PWM_CHANNEL1;
             }
-        }      
+        }
+#endif
     }
 }
 /**
