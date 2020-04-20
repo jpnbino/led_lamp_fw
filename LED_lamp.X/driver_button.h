@@ -37,7 +37,8 @@ extern "C" {
     button_event_t Button_Scan  ( button_channel_t channel );
     button_event_t Button_Get_Pressed_Event ( void );
     button_event_t Button_Get_Released_Event ( void );
-
+    button_event_t Button_Get_Held_Event ( void );
+    
 #ifdef	__cplusplus
 }
 #endif

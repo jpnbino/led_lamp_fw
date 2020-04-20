@@ -45,6 +45,10 @@
 #include "soft_pwm.h"
 #include "driver_button.h"
 #include "book_lamp_app.h"
+#include "systick.h"
+
+void Blink_Light ( void );
+void Toggle_Light_When_Hold ( void );
 /*
                          Main application
  */
@@ -59,8 +63,9 @@ void main(void)
     IO_RA5_SetLow();
     
     Button_Driver_Init();
-    Soft_PWM_Init();
-       
+    //Soft_PWM_Init();
+    Systick_Init();
+    
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
     // Use the following macros to:
 
@@ -75,18 +80,61 @@ void main(void)
 
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
-    
-
-    static uint16_t i = 0;
-    pwm_channel_t pwm_channel = PWM_CHANNEL1;
-    
-    
+  
+    uint8_t flag_held_button_event;
     while (1)
     {
         CLRWDT();
-        Book_Lamp_App();
+        
+        //Book_Lamp_App();
+        Button_Scan(0);
+        Toggle_Light_When_Hold();
+        //Blink_Light();
+        Button_Clear_Events();
     }
 }
+
+void Blink_Light ( void )
+{
+   time_t const LED_TOGGLE_TIMEOUT = 3000; 
+   static time_t led_toggle_time_start = 0; 
+   
+   if ( Time_Now() - led_toggle_time_start > LED_TOGGLE_TIMEOUT)
+   {
+       led_toggle_time_start = Time_Now(); 
+       IO_RA4_Toggle();
+   }
+   
+}
+
+void Toggle_Light_When_Hold ( void )
+{
+    time_t const LED_TOGGLE_TIMEOUT = 500; 
+    static time_t led_toggle_time_start = 0; 
+    static uint8_t flag_counter_on = 0; 
+   
+    if ( Button_Get_Pressed_Event() == BUTTON_EVENT_PRESSED )
+    {
+        led_toggle_time_start = Time_Now(); 
+        flag_counter_on = 1;
+    }
+
+    if ( flag_counter_on == 1)
+    {
+        if ( Time_Now() - led_toggle_time_start > LED_TOGGLE_TIMEOUT)
+        {
+            led_toggle_time_start = Time_Now(); 
+            IO_RA4_Toggle();
+        }
+    }
+    
+    if ( Button_Get_Released_Event() == BUTTON_EVENT_RELEASED)
+    {
+        flag_counter_on = 0;
+    }
+    
+}
+
 /**
  End of File
 */
