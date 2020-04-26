@@ -46,9 +46,22 @@
 #include "driver_button.h"
 #include "book_lamp_app.h"
 #include "systick.h"
+#include "light.h"
 
 void Blink_Light ( void );
 void Toggle_Light_When_Hold ( void );
+
+//PWM Wrappers
+void PWM_White_Set (uint8_t duty_cycle )
+{   
+    Soft_PWM_Set_Duty(PWM_CHANNEL1, duty_cycle); 
+}
+
+void PWM_Yellow_Set (uint8_t duty_cycle )
+{
+    Soft_PWM_Set_Duty(PWM_CHANNEL2, duty_cycle);
+}
+
 /*
                          Main application
  */
@@ -63,9 +76,14 @@ void main(void)
     IO_RA5_SetLow();
     
     Button_Driver_Init();
-    //Soft_PWM_Init();
+    Soft_PWM_Init();
     Systick_Init();
     
+    light_init_t light_init;
+    light_init.white_color_pwm_set = &PWM_White_Set;
+    light_init.yellow_color_pwm_set = &PWM_Yellow_Set;
+
+    Light_Init(light_init);
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
     // Use the following macros to:
 
@@ -82,15 +100,17 @@ void main(void)
     //INTERRUPT_PeripheralInterruptDisable();
   
     uint8_t flag_held_button_event;
+    
+    Book_Lamp_Init();
     while (1)
     {
         CLRWDT();
         
-        //Book_Lamp_App();
-        Button_Scan(0);
-        Toggle_Light_When_Hold();
+        Book_Lamp_App();
+        //Button_Scan(0);
+        //Toggle_Light_When_Hold();
         //Blink_Light();
-        Button_Clear_Events();
+        //Button_Clear_Events();
     }
 }
 

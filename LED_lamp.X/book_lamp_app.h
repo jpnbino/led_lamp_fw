@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-
+void Book_Lamp_Init ( void );
 void Book_Lamp_App ( void );
 
 #ifdef	__cplusplus
