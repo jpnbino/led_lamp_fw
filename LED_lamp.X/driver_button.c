@@ -5,7 +5,7 @@
 
 #define DEBOUNCE_TIME		0.3
 #define SAMPLE_FREQUENCY	10
-#define MAXIMUM             (DEBOUNCE_TIME * SAMPLE_FREQUENCY)
+#define MAXIMUM             (uint8_t)(DEBOUNCE_TIME * SAMPLE_FREQUENCY)
 
 static button_event_t flag_press, flag_release, flag_held;
 static volatile button_state_t button_state;
@@ -18,7 +18,6 @@ volatile int8_t input;
 volatile static uint8_t integrator = 0;
 /* Cleaned-up version of the input signal */
 volatile uint8_t output;      
-
 
 /* Step 1: Update the integrator based on the input signal.  Note that the 
 integrator follows the input, decreasing or increasing towards the limits as 
@@ -40,7 +39,6 @@ determined by the input state (0 or 1). */
 /* Step 2: Update the output state based on the integrator.  Note that the
 output will only change states if the integrator has reached a limit, either
 0 or MAXIMUM. */
-
     if (integrator == 0)
     {
         output = 0;
@@ -61,6 +59,7 @@ output will only change states if the integrator has reached a limit, either
     {
         button_state = 0;
     }
+
 }
 
 
