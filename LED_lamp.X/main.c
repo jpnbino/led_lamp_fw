@@ -44,6 +44,24 @@
 #include "mcc_generated_files/mcc.h"
 #include "soft_pwm.h"
 #include "driver_button.h"
+#include "book_lamp_app.h"
+#include "systick.h"
+#include "light.h"
+
+void Blink_Light ( void );
+void Toggle_Light_When_Hold ( void );
+
+//PWM Wrappers
+void PWM_White_Set (uint8_t duty_cycle )
+{   
+    Soft_PWM_Set_Duty(PWM_CHANNEL1, duty_cycle); 
+}
+
+void PWM_Yellow_Set (uint8_t duty_cycle )
+{
+    Soft_PWM_Set_Duty(PWM_CHANNEL2, duty_cycle);
+}
+
 /*
                          Main application
  */
@@ -59,68 +77,76 @@ void main(void)
     
     Button_Driver_Init();
     Soft_PWM_Init();
-       
-    // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
-    // Use the following macros to:
+    Systick_Init();
+    
+    light_init_t light_init;
+    light_init.white_color_pwm_set = &PWM_White_Set;
+    light_init.yellow_color_pwm_set = &PWM_Yellow_Set;
+    Light_Init(light_init);
 
-    // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
-    
-    // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
-
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-
-    // Disable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptDisable();
     
-
-    static uint16_t i = 0;
-    pwm_channel_t pwm_channel = PWM_CHANNEL1;
+    Book_Lamp_Init();
     
+    Button_Scan(0);
+    DELAY_milliseconds(20);
+    Button_Scan(0);
+    Button_Clear_Events();
     
     while (1)
     {
         CLRWDT();
-        Button_Scan( 0 );
         
-        if ( Button_Get_Pressed_Event() == BUTTON_EVENT_PRESSED)
-        {
-            Soft_PWM_Set_Duty(pwm_channel, 100);
-        }
-
-        if ( Button_Get_Released_Event() == BUTTON_EVENT_RELEASED)
-        {
-            Soft_PWM_Set_Duty(pwm_channel, 0);
-        }
-        
-        Button_Clear_Events();
-        
-#if 0 
-        if ( i <= 255)
-        {
-            i++;
-            Soft_PWM_Set_Duty(pwm_channel, i);
-            DELAY_milliseconds(10);
-        }
-        else
-        {
-            i = 0;
-            DELAY_milliseconds(100);
-            Soft_PWM_Set_Duty(pwm_channel, i);
-            DELAY_milliseconds(100);
-            
-            pwm_channel++;
-            
-            if (pwm_channel >= PWM_CHANNEL_MAX  )
-            {
-                pwm_channel = PWM_CHANNEL1;
-            }
-        }
-#endif
+        Book_Lamp_App();
+        //Toggle_Light_When_Hold();
+        //Blink_Light();
     }
 }
+
+void Blink_Light ( void )
+{
+   time_t const LED_TOGGLE_TIMEOUT = 3000; 
+   static time_t led_toggle_time_start = 0; 
+   
+   if ( Time_Now() - led_toggle_time_start > LED_TOGGLE_TIMEOUT)
+   {
+       led_toggle_time_start = Time_Now(); 
+       IO_RA4_Toggle();
+   }
+   
+}
+
+void Toggle_Light_When_Hold ( void )
+{
+    time_t const LED_TOGGLE_TIMEOUT = 500; 
+    static time_t led_toggle_time_start = 0; 
+    static uint8_t flag_counter_on = 0; 
+   
+    Button_Scan(0);
+    if ( Button_Get_Pressed_Event() == BUTTON_EVENT_PRESSED )
+    {
+        led_toggle_time_start = Time_Now(); 
+        flag_counter_on = 1;
+    }
+
+    if ( flag_counter_on == 1)
+    {
+        if ( Time_Now() - led_toggle_time_start > LED_TOGGLE_TIMEOUT)
+        {
+            led_toggle_time_start = Time_Now(); 
+            IO_RA4_Toggle();
+        }
+    }
+    
+    if ( Button_Get_Released_Event() == BUTTON_EVENT_RELEASED)
+    {
+        flag_counter_on = 0;
+    }
+    
+    Button_Clear_Events();    
+}
+
 /**
  End of File
 */
