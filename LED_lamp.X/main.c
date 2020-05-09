@@ -82,35 +82,25 @@ void main(void)
     light_init_t light_init;
     light_init.white_color_pwm_set = &PWM_White_Set;
     light_init.yellow_color_pwm_set = &PWM_Yellow_Set;
-
     Light_Init(light_init);
-    // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
-    // Use the following macros to:
 
-    // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
-    
-    // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
-
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-
-    // Disable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptDisable();
-  
-    uint8_t flag_held_button_event;
     
     Book_Lamp_Init();
+    
+    Button_Scan(0);
+    DELAY_milliseconds(20);
+    Button_Scan(0);
+    Button_Clear_Events();
+    
     while (1)
     {
         CLRWDT();
         
         Book_Lamp_App();
-        //Button_Scan(0);
         //Toggle_Light_When_Hold();
         //Blink_Light();
-        //Button_Clear_Events();
     }
 }
 
@@ -133,6 +123,7 @@ void Toggle_Light_When_Hold ( void )
     static time_t led_toggle_time_start = 0; 
     static uint8_t flag_counter_on = 0; 
    
+    Button_Scan(0);
     if ( Button_Get_Pressed_Event() == BUTTON_EVENT_PRESSED )
     {
         led_toggle_time_start = Time_Now(); 
@@ -153,6 +144,7 @@ void Toggle_Light_When_Hold ( void )
         flag_counter_on = 0;
     }
     
+    Button_Clear_Events();    
 }
 
 /**

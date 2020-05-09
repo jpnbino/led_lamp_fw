@@ -1,9 +1,9 @@
-
+#include <stdlib.h>
 #include "book_lamp_app.h"
 #include "driver_button.h"
 #include "soft_pwm.h"
 #include "systick.h"
-#include "button_events.h"
+#include "click_events.h"
 #include "light.h"
 
 #define ARRAYSIZE(arr) (sizeof(arr) / sizeof(arr[0]))
@@ -95,26 +95,28 @@ void Event_Change_Temperature_Handler( void )
 event_t Get_Event ( void )
 {
     event_t event = EVENT_NONE;
-    static uint8_t wait_more_than_double_click_timeout;
-    static uint8_t button_release_request = 0;
-    double_click_state_t double_click_state = STATE_IDLE;
-    double_click_state_t sdouble_click_state = STATE_IDLE;
+ 
+    click_state_t click_state = ST_CLICK_IDLE;
     
     static uint8_t start_repeat = 0;
     static time_t hold_time_start;
-    time_t const hold_timeout = 800;
+    time_t const hold_timeout = 700;
           
     Button_Scan( 0 );
+    
+    click_state = Get_Click_Event();
 
-    sdouble_click_state = double_click_state;
-    double_click_state = Double_Click_Run();
-
-    if ( double_click_state == STATE_SUCCESS)
+    if ( click_state == ST_CLICK_SINGLE)
     {
-        event = EVENT_DOUBLE_CLICK; 
+        event =   EVENT_BUTTON_RELEASED;
     }
     
-    if ( Hold_Button_Run() == STATE_SUCCESS )
+    if ( click_state == ST_CLICK_DOUBLE)
+    {
+      event =   EVENT_DOUBLE_CLICK;
+    }
+    
+    if ( click_state == ST_CLICK_LONG )
     {       
         if ( start_repeat )
         {
@@ -131,17 +133,6 @@ event_t Get_Event ( void )
         }
     }
     
-    if ( Button_Get_Released_Event() )
-    {
-        start_repeat = 0;
-    }
-    
-    //Change Temperature Event
-    if ( Button_Get_Released_Event() ==  BUTTON_EVENT_RELEASED)
-    {
-        event = EVENT_BUTTON_RELEASED; 
-    }
-
     Button_Clear_Events();
     return event;
 }
@@ -158,6 +149,8 @@ void Book_Lamp_App ( void )
     static state_t state = STATE_OFF;
     event_t event = EVENT_NONE;
     
+    static uint8_t ignore_release = 0;
+    
     event = Get_Event();
     
     switch ( state )
@@ -165,27 +158,49 @@ void Book_Lamp_App ( void )
         case  STATE_OFF:
             if ( event == EVENT_BUTTON_RELEASED )
             {
-                Event_Turn_On_Handler();
-                state = STATE_CHANGE_LIGHT_TEMPERATURE;
+                if (!ignore_release)
+                {     
+                    Event_Turn_On_Handler();
+                    state = STATE_CHANGE_LIGHT_TEMPERATURE;
+                }
+                else 
+                {
+                    ignore_release = 0;
+                }
+                
             }             
             break;
             
         case STATE_CHANGE_LIGHT_TEMPERATURE:  
             if ( event == EVENT_BUTTON_RELEASED )
             {
-                Event_Change_Temperature_Handler();
-                state = STATE_CHANGE_LIGHT_TEMPERATURE;                  
+                if ( !ignore_release)
+                {
+                    Event_Change_Temperature_Handler();
+                    state = STATE_CHANGE_LIGHT_TEMPERATURE;
+                }
+                else 
+                {
+                    ignore_release = 0;
+                }
             }
+                
             if (event == EVENT_DOUBLE_CLICK)
             {
                 Event_Turn_Off_Handler();
                 state = STATE_OFF;
+            }
+            
+            if ( event == EVENT_CHANGE_BRIGHTNESS )
+            {
+                Event_Change_Brightness_Handler();            
             }
             break;
             
         case STATE_CHANGE_LIGHT_BRIGTHNESS:
             if ( event == EVENT_BUTTON_RELEASED )
             {
+                ignore_release = 1;
                 state = STATE_CHANGE_LIGHT_TEMPERATURE;               
             }
             
@@ -196,6 +211,7 @@ void Book_Lamp_App ( void )
             break;
 
         default:
+                asm("reset");
             break;    
     }
     
