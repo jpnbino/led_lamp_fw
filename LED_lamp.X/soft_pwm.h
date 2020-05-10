@@ -1,8 +1,8 @@
-/* 
+/*
  * File:   soft_pwm.h
  * Author: jpnbino
  *
- * Created on 5 de Março de 2020, 23:18
+ * Created on 5 de Marï¿½o de 2020, 23:18
  */
 
 #ifndef SOFT_PWM_H
@@ -13,18 +13,19 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-    
+
 
     typedef enum {
         PWM_CHANNEL1,
         PWM_CHANNEL2,
-        PWM_CHANNEL_MAX,  
-    }pwm_channel_t;
-    
+        PWM_CHANNEL_MAX,
+    }
+    pwm_channel_t;
+
     void Soft_PWM_Init ( void );
     void Soft_PWM_Set_Frequency (  uint8_t freq_hz );
     void Soft_PWM_Set_Duty ( pwm_channel_t channel, uint8_t duty );
-    
+
 
 
 #ifdef	__cplusplus

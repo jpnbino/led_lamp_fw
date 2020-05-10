@@ -14,19 +14,19 @@
 extern "C" {
 #endif
 
-    typedef struct 
+    typedef struct
     {
         void (*white_color_pwm_set) (uint8_t);
         void (*yellow_color_pwm_set) (uint8_t);
         uint8_t pwm_resolution;
 
-    }light_init_t;
+    } light_init_t;
 
     typedef struct
     {
         uint8_t white;
         uint8_t yellow;
-    }light_t;
+    } light_t;
 
     void Light_Init(light_init_t light_init);
     void Set_Light_Brightness(light_t light);

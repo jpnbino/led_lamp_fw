@@ -1,5 +1,5 @@
 
-	
+
 /******************************************************************************
 * Includes
 ******************************************************************************/
@@ -12,7 +12,7 @@ const time_t TIME_MAX = UINT32_MAX;
 /******************************************************************************
 * Variables
 ******************************************************************************/
-static volatile time_t system_ticks = 0; 
+static volatile time_t system_ticks = 0;
 
 /******************************************************************************
 * Function Implementation
@@ -35,7 +35,7 @@ static volatile time_t system_ticks = 0;
 ******************************************************************************/
 void ISR_Systick_Callback(void)
 {
-    //Number of Ticks since module was started 
+    //Number of Ticks since module was started
     ++system_ticks;
 }
 
@@ -46,18 +46,18 @@ void Systick_Init ( void )
 
 time_t Time_Now ( void )
 {
-   return system_ticks ;
+    return system_ticks ;
 }
 
 time_t Time_Passed (time_t since)
 {
     time_t now = system_ticks;
-    
+
     if ( now >= since )
     {
         return (now - since );
     }
-    
+
     // rollover has occured
     return ( now + ( TIME_MAX - since ));
 }
