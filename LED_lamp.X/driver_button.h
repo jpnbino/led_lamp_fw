@@ -31,16 +31,15 @@ extern "C" {
         BUTTON_EVENT_NONE,
         BUTTON_EVENT_PRESSED,
         BUTTON_EVENT_RELEASED,
-        BUTTON_EVENT_HELD,
     } button_event_t;
 
+    void ISR_Button_Debounce_Callback (void);
     void Button_Driver_Init (void );
     void Button_Clear_Events ( void );
     button_state_t Button_Read_State ( button_channel_t channel );
     button_event_t Button_Scan  ( button_channel_t channel );
     button_event_t Button_Get_Pressed_Event ( void );
     button_event_t Button_Get_Released_Event ( void );
-    button_event_t Button_Get_Held_Event ( void );
 
 #ifdef	__cplusplus
 }
@@ -48,3 +47,6 @@ extern "C" {
 
 #endif	/* DRIVER_BUTTON_H */
 
+/**
+ End of File
+*/

@@ -30,7 +30,7 @@ void GPIO_Channel_Write ( uint8_t channel, uint8_t state )
 
 }
 
-void ISR_PWM (void)
+void ISR_PWM_Callback (void)
 {
     static volatile uint16_t interrupt_counter = 0;
 
@@ -57,9 +57,6 @@ void ISR_PWM (void)
 
 void Soft_PWM_Init ( void )
 {
-
-    TMR0_SetInterruptHandler(ISR_PWM);
-
     for (uint8_t i = 0; i < PWM_CHANNEL_MAX; i++)
     {
         pwm_channel[i] = gpio_channel[i];

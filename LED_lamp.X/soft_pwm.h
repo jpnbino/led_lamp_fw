@@ -21,9 +21,8 @@ extern "C" {
         PWM_CHANNEL_MAX,
     }
     pwm_channel_t;
-
+    void ISR_PWM_Callback ( void );
     void Soft_PWM_Init ( void );
-    void Soft_PWM_Set_Frequency (  uint8_t freq_hz );
     void Soft_PWM_Set_Duty ( pwm_channel_t channel, uint8_t duty );
 
 
