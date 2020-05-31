@@ -1,8 +1,8 @@
-/*
- * File:   book_lamp_app.h
- * Author: jpnbino
- *
- * Created on March 22, 2020, 7:31 PM
+/**
+ @brief Application API to control a book lamp light.
+  
+ @file book_lamp_app.h
+ @author Joao P bino
  */
 
 #ifndef BOOK_LAMP_APP_H
@@ -14,7 +14,22 @@
 extern "C" {
 #endif
 
+    /**
+     @brief Init application
+     
+     @param None
+    
+     @return None
+    */
     void Book_Lamp_Init ( void );
+    
+    /**
+     @brief Run the application
+     
+     @param None
+    
+     @return None
+    */
     void Book_Lamp_App ( void );
 
 #ifdef	__cplusplus

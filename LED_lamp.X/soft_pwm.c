@@ -1,12 +1,14 @@
-
+/**
+@brief software pwm implementation source file.
+   
+This source file provides implementation for a software PWM. 
+  
+@file soft_pwm.c
+@author Joao P Bino
+*/  
 #include "soft_pwm.h"
-#include "mcc_generated_files/tmr0.h"
 #include "mcc_generated_files/pin_manager.h"
-#include "mcc_generated_files/delay.h"
 
-#define PWM_RESOLUTION 255
-
-static uint8_t frequency;
 static volatile uint16_t dutycycle [PWM_CHANNEL_MAX] = {0};
 static volatile uint8_t pwm_channel[PWM_CHANNEL_MAX] = {0};
 static volatile uint8_t gpio_channel[PWM_CHANNEL_MAX] =

@@ -1,4 +1,8 @@
 #include <stdlib.h>
+
+/* For sleep mode*/
+#include <pic.h>
+
 #include "book_lamp_app.h"
 #include "driver_button.h"
 #include "soft_pwm.h"
@@ -60,6 +64,7 @@ void Event_Turn_Off_Handler( void )
 {
     light_t light = { 0,0 };
     Set_Light_Brightness(light);
+    SLEEP();
 }
 
 

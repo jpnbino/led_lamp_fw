@@ -1,3 +1,9 @@
+/**
+@brief main file.
+@file main.c
+@author Joao P Bino
+*/
+
 #include "mcc_generated_files/mcc.h"
 #include "soft_pwm.h"
 #include "driver_button.h"
@@ -20,17 +26,17 @@ void PWM_Yellow_Set (uint8_t duty_cycle )
     Main application
  */
 void main(void)
-{
+{    
     // initialize the device
     SYSTEM_Initialize();
-
+    
     Button_Driver_Init();
     Soft_PWM_Init();
     Systick_Init();
     
     TMR0_SetInterruptHandler(ISR_PWM_Callback);
-    TMR1_SetInterruptHandler( ISR_Systick_Callback);
-    TMR2_SetInterruptHandler( ISR_Button_Debounce_Callback);
+    TMR1_SetInterruptHandler(ISR_Systick_Callback);
+    TMR2_SetInterruptHandler(ISR_Button_Debounce_Callback);
 
     light_init_t light_init;
     light_init.white_color_pwm_set = &PWM_White_Set;
