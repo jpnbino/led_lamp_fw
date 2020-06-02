@@ -9,6 +9,8 @@
 #include "systick.h"
 #include "click_events.h"
 #include "light.h"
+#include "mcc_generated_files/pin_manager.h"
+#include "mcc_generated_files/interrupt_manager.h"
 
 #define ARRAYSIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
@@ -64,6 +66,9 @@ void Event_Turn_Off_Handler( void )
 {
     light_t light = { 0,0 };
     Set_Light_Brightness(light);
+
+    /* Enters Sleep Mode */
+    VREGCONbits.VREGPM = 1;
     SLEEP();
 }
 
@@ -194,8 +199,10 @@ void Book_Lamp_App ( void )
 
         if (event == EVENT_DOUBLE_CLICK)
         {
+            /*It sleeps in the */
             Event_Turn_Off_Handler();
-            state = STATE_OFF;
+            Event_Turn_On_Handler();
+            state = STATE_CHANGE_LIGHT_TEMPERATURE;
         }
 
         if ( event == EVENT_CHANGE_BRIGHTNESS )
