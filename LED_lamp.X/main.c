@@ -1,89 +1,88 @@
 /**
-  Generated Main Source File
-
-  Company:
-    Microchip Technology Inc.
-
-  File Name:
-    main.c
-
-  Summary:
-    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
-
-  Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
-    Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.77
-        Device            :  PIC12F1840
-        Driver Version    :  2.00
-*/
-
-/*
-    (c) 2018 Microchip Technology Inc. and its subsidiaries. 
-    
-    Subject to your compliance with these terms, you may use Microchip software and any 
-    derivatives exclusively with Microchip products. It is your responsibility to comply with third party 
-    license terms applicable to your use of third party software (including open source software) that 
-    may accompany Microchip software.
-    
-    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY 
-    IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS 
-    FOR A PARTICULAR PURPOSE.
-    
-    IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-    WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP 
-    HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO 
-    THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL 
-    CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT 
-    OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS 
-    SOFTWARE.
+@brief main file.
+@file main.c
+@author Joao P Bino
 */
 
 #include "mcc_generated_files/mcc.h"
+#include "soft_pwm.h"
+#include "driver_button.h"
+#include "book_lamp_app.h"
+#include "systick.h"
+#include "light.h"
+
+/**
+ @brief Wrapper function comply with HAL function. 
+
+ This function is a wrapper to comply the HAL function to control the PWM to 
+ the function that controls the light intensity of the white light.
+ 
+ @param [in]   PWM Duty Cycle for white color
+ @return None
+
+ @see Soft_PWM_Set_Duty
+ @see Set_Light_Brightness
+*/
+void PWM_White_Light_Set (uint8_t duty_cycle )
+{
+    Soft_PWM_Set_Duty(PWM_CHANNEL1, duty_cycle);
+}
+
+/**
+ @brief Wrapper function comply with HAL function. 
+
+ This function is a wrapper to comply the HAL function to control the PWM to 
+ the function that controls the light intensity of the yellow light.
+ 
+ @param [in]   PWM Duty Cycle for yellow color
+ @return None
+
+ @see Soft_PWM_Set_Duty
+ @see Set_Light_Brightness
+*/
+void PWM_Yellow_Light_Set (uint8_t duty_cycle )
+{
+    Soft_PWM_Set_Duty(PWM_CHANNEL2, duty_cycle);
+}
 
 /*
-                         Main application
+    Main application
  */
 void main(void)
-{
-    // initialize the device
+{    
+    /* Initializes the Lower level drivers and system. Provided by manufacturer. */
     SYSTEM_Initialize();
+ 
+    /* Set interrupt callback function */
+    TMR0_SetInterruptHandler(ISR_PWM_Callback);
+    TMR1_SetInterruptHandler(ISR_Systick_Callback);
+    TMR2_SetInterruptHandler(ISR_Button_Debounce_Callback);
+    
+    /* Init application drivers */
+    Button_Driver_Init();
+    Soft_PWM_Init();
+    Systick_Init();
+    
+    light_init_t light_init;
+    light_init.white_color_pwm_set = &PWM_White_Light_Set;
+    light_init.yellow_color_pwm_set = &PWM_Yellow_Light_Set;
+    Light_Init(light_init);
+ 
+    INTERRUPT_GlobalInterruptEnable();
+    INTERRUPT_PeripheralInterruptEnable();
 
-    // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
-    // Use the following macros to:
-
-    // Enable the Global Interrupts
-    //INTERRUPT_GlobalInterruptEnable();
-
-    // Enable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptEnable();
-
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-
-    // Disable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptDisable();
+    Book_Lamp_Init();
 
     while (1)
     {
-        // Add your application code
-        IO_RA4_SetHigh();
-        DELAY_milliseconds(  500 );
-        IO_RA4_SetLow();
+        /* Clear Watchdog */
+        CLRWDT();
         
-        IO_RA5_SetHigh();
-        DELAY_milliseconds(  500 );
-        IO_RA5_SetLow();
-        
-        IO_RA5_SetHigh();
-        IO_RA4_SetHigh();
-        DELAY_milliseconds(  500 );
-        IO_RA5_SetLow();
-        IO_RA4_SetLow();
+        /* run application */
+        Book_Lamp_App();
     }
 }
+
 /**
  End of File
 */
