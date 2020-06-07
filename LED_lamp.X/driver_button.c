@@ -32,7 +32,7 @@ void ISR_Button_Debounce_Callback (void)
     /* Step 1: Update the integrator based on the input signal.  Note that the
     integrator follows the input, decreasing or increasing towards the limits as
     determined by the input state (0 or 1). */
-    input = IO_RA2_GetValue();
+    input = IO_RA0_GetValue();
 
     if (input == 0)
     {
@@ -63,11 +63,11 @@ void ISR_Button_Debounce_Callback (void)
 
     if( output == 1)
     {
-        button_state = 1;
+        button_state = 0;
     }
     else
     {
-        button_state = 0;
+        button_state = 1;
     }
 
 }
