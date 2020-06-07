@@ -5,7 +5,7 @@
 click_state_t Get_Click_Event ( void )
 {
     /* Time within two consecutives clicks are considered a double click.*/
-    time_t const DOUBLE_CLICK_TIMEOUT = 200;
+    time_t const DOUBLE_CLICK_TIMEOUT = 300;
     /* If a button is held pressed for more than this time, the event is called
      button long press.*/
     time_t const LONG_CLICK_TIMEOUT = 700;
