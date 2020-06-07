@@ -1,16 +1,26 @@
+/**
+@brief Implements basic button functions.
+   
+This source file provides implementation for basics events from buttons.
 
+@file driver_button.c
+@author Joao P Bino
+*/
+
+/**
+  @section Included Files
+*/
 #include "driver_button.h"
-#include "mcc_generated_files/tmr2.h"
 #include "mcc_generated_files/pin_manager.h"
 
-#define DEBOUNCE_TIME		0.3
-#define SAMPLE_FREQUENCY	10
-#define MAXIMUM             (uint8_t)(DEBOUNCE_TIME * SAMPLE_FREQUENCY)
+#define DEBOUNCE_TIME_MS	30
+#define SAMPLE_PERIOD_MS	1
+#define MAXIMUM             (uint8_t)(DEBOUNCE_TIME_MS * SAMPLE_PERIOD_MS)
 
-static button_event_t flag_press, flag_release, flag_held;
+static button_event_t flag_press, flag_release;
 static volatile button_state_t button_state;
 
-void ISR_Button_Debounce (void)
+void ISR_Button_Debounce_Callback (void)
 {
     /* 0 or 1 depending on the input signal */
     volatile int8_t input;
@@ -22,7 +32,7 @@ void ISR_Button_Debounce (void)
     /* Step 1: Update the integrator based on the input signal.  Note that the
     integrator follows the input, decreasing or increasing towards the limits as
     determined by the input state (0 or 1). */
-    input = IO_RA2_GetValue();
+    input = IO_RA0_GetValue();
 
     if (input == 0)
     {
@@ -53,11 +63,11 @@ void ISR_Button_Debounce (void)
 
     if( output == 1)
     {
-        button_state = 1;
+        button_state = 0;
     }
     else
     {
-        button_state = 0;
+        button_state = 1;
     }
 
 }
@@ -65,7 +75,7 @@ void ISR_Button_Debounce (void)
 
 void Button_Driver_Init (void )
 {
-    TMR2_SetInterruptHandler( ISR_Button_Debounce );
+
 }
 
 button_state_t Button_Read_State ( button_channel_t channel )
@@ -77,23 +87,12 @@ button_event_t Button_Scan  ( button_channel_t channel )
 {
     static button_state_t current_button_state = BUTTON_STATE_HIGH, previous_button_state;
 
-    if ( channel >= BUTTON_CHANNEL_MAX )
-    {
-        return 0xff;
-    }
-
-
     previous_button_state = current_button_state;
     current_button_state = Button_Read_State( channel );
 
     if ( current_button_state == BUTTON_STATE_LOW && previous_button_state ==  BUTTON_STATE_HIGH )
     {
         flag_press = BUTTON_EVENT_PRESSED;
-    }
-
-    if ( current_button_state == BUTTON_STATE_HIGH && previous_button_state ==  BUTTON_STATE_HIGH )
-    {
-        flag_held = BUTTON_EVENT_HELD;
     }
 
     if ( current_button_state == BUTTON_STATE_HIGH && previous_button_state ==  BUTTON_STATE_LOW )
@@ -107,7 +106,6 @@ button_event_t Button_Scan  ( button_channel_t channel )
 void Button_Clear_Events ( void )
 {
     flag_press      = BUTTON_EVENT_NONE;
-    flag_held       = BUTTON_EVENT_NONE;
     flag_release    = BUTTON_EVENT_NONE;
 }
 
@@ -115,11 +113,12 @@ button_event_t Button_Get_Pressed_Event ( void )
 {
     return flag_press;
 }
-button_event_t Button_Get_Held_Event ( void )
-{
-    return flag_held;
-}
+
 button_event_t Button_Get_Released_Event ( void )
 {
     return flag_release;
 }
+
+/**
+ End of File
+*/

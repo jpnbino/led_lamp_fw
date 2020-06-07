@@ -1,15 +1,21 @@
 #include <stdlib.h>
+
+/* For sleep mode*/
+#include <pic.h>
+
 #include "book_lamp_app.h"
 #include "driver_button.h"
 #include "soft_pwm.h"
 #include "systick.h"
 #include "click_events.h"
 #include "light.h"
+#include "mcc_generated_files/pin_manager.h"
+#include "mcc_generated_files/interrupt_manager.h"
 
 #define ARRAYSIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
 static uint8_t brightness;
-uint8_t const set_brightness[5] = {30,80,120,200,255};
+uint8_t const set_brightness[5] = {10,20,30,50,100};
 
 static light_t light_brightness;
 static light_t light_ratio;
@@ -60,6 +66,10 @@ void Event_Turn_Off_Handler( void )
 {
     light_t light = { 0,0 };
     Set_Light_Brightness(light);
+    
+    /* Enters Sleep Mode */
+    VREGCONbits.VREGPM = 1;
+    SLEEP();
 }
 
 
@@ -189,8 +199,10 @@ void Book_Lamp_App ( void )
 
         if (event == EVENT_DOUBLE_CLICK)
         {
+            /*It sleeps in the */
             Event_Turn_Off_Handler();
-            state = STATE_OFF;
+            Event_Turn_On_Handler();
+            state = STATE_CHANGE_LIGHT_TEMPERATURE;
         }
 
         if ( event == EVENT_CHANGE_BRIGHTNESS )
@@ -216,5 +228,4 @@ void Book_Lamp_App ( void )
         asm("reset");
         break;
     }
-
 }

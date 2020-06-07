@@ -1,8 +1,10 @@
-/*
- * File:   systick.h
- * Author: jpnbino
- *
- * Created on 17 de Abril de 2020, 20:38
+/**
+ @brief File containing Definitions and API Systick implementations.
+
+This source file provides APIs time counting for timed events.
+  
+ @file systick.h
+ @author Joao P bino
  */
 
 #ifndef SYSTICK_H
@@ -15,70 +17,83 @@ extern "C" {
 #endif
 
     typedef uint32_t time_t;
-    /******************************************************************************
-     Function Name: Systick_Init
-    *******************************************************************************
-     Summary:
-    	Initializes systick.
+    
+    /**
+     @brief Updates the tick count. 
+     The size of tick depends upon the timer period attached to it. If timer has
+     a period of 1ms then the tick is 1ms.
+    
+     @param None
+    
+     @return None
+    
+     @note This function needs to be called from within an ISR.
+    */
+    void ISR_Systick_Callback(void);
+    
+    /**
+     @brief Initializes systick.
 
-     Parameters:
-    	None
+     @param	None
 
-     Return:
-        None
+     @return None
 
-     Note:
-     	None
-    ******************************************************************************/
-    void Systick_Init   ( void );
-    /******************************************************************************
-    * Function Name: Time_Now
-    *******************************************************************************
-     Summary:
-    	Gives the number of Ticks since the module was initialized
+     @note None
+    */
+    void Systick_Init (void);
+    
+    /**
+     @brief Gives the number of Ticks since the module was initialized
 
-     Parameters:
-    	None
+     @param None
 
-     Return:
-      	Number of Ticks since system was booted
+     @return Number of Ticks since system was booted
 
      Example:
-       uint32_t time_now;
-       Systick_Count_Update();
-       time_now = Time_Now();
+    @code
+        //Generic ISR calling
+        timer_ISR(void)
+        {
+            ISR_Systick_Callback();
+        }
+        uint32_t time_now;
+        Systick_Count_Update();
+        time_now = Time_Now();
+     @endcode
 
-     Note:
+     @note
      	None
-    ******************************************************************************/
-    time_t Time_Now ( void );
+    */
+    time_t Time_Now (void);
 
-    /******************************************************************************
-    * Function Name: Time_Passed
-    *******************************************************************************
-     Summary:
+    /**
+     @brief
     	Calculates the time passed since a specific tick.
 
 
-     Parameters:
+     @param
     	since - Value in Ticks of a given time.
 
-     Return:
+     @return
       	time_passed - time in ticks passed since a given time.
 
      Example:
-       const time_t WAIT_TIMEOUT = 300;
-       time_t last_execution
-       last_execution = Time_Now();
+        @code
+        main()
+        {
+            const time_t WAIT_TIMEOUT = 300;
+            time_t last_execution
+            last_execution = Time_Now();
 
-    	if ( Time_Passed ( last_execution )) > WAIT_TIMEOUT)
-       {
-           Do_Something();
-       }
-
-     Note:
+            if ( Time_Passed ( last_execution )) > WAIT_TIMEOUT)
+            {
+               Do_Something();
+            }
+        }
+        @endcode
+     @note
      	None
-    ******************************************************************************/
+    */
     time_t Time_Passed (time_t since);
 
 
@@ -88,3 +103,6 @@ extern "C" {
 
 #endif	/* SYSTICK_H */
 
+/**
+  End of File
+*/

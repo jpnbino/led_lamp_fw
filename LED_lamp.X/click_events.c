@@ -4,8 +4,11 @@
 
 click_state_t Get_Click_Event ( void )
 {
-    time_t const double_click_timeout = 200;
-    time_t const long_click_timeout = 700;
+    /* Time within two consecutives clicks are considered a double click.*/
+    time_t const DOUBLE_CLICK_TIMEOUT = 300;
+    /* If a button is held pressed for more than this time, the event is called
+     button long press.*/
+    time_t const LONG_CLICK_TIMEOUT = 700;
 
     static time_t  double_click_timeout_start;
     static time_t  long_click_timeout_start;
@@ -29,7 +32,7 @@ click_state_t Get_Click_Event ( void )
             state = ST_CLICK_WAIT_DOUBLE;
         }
 
-        if ( Time_Passed(long_click_timeout_start) > long_click_timeout)
+        if ( Time_Passed(long_click_timeout_start) > LONG_CLICK_TIMEOUT)
         {
             state =  ST_CLICK_LONG;
         }
@@ -47,7 +50,7 @@ click_state_t Get_Click_Event ( void )
             state =  ST_CLICK_DOUBLE;
         }
 
-        if ( Time_Passed(double_click_timeout_start) > double_click_timeout)
+        if ( Time_Passed(double_click_timeout_start) > DOUBLE_CLICK_TIMEOUT)
         {
             state =  ST_CLICK_SINGLE;
         }
