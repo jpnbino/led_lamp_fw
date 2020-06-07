@@ -21,7 +21,7 @@ extern "C" {
     /** Defines the period of the PWM. 
      if period is 100 and duty cycle is 30. Then, the output is
      High for 30 steps and low for 70 steps */
-    #define PWM_RESOLUTION 255
+    #define PWM_RESOLUTION 100
 
     typedef enum {
         PWM_CHANNEL1,

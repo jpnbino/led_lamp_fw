@@ -76,6 +76,12 @@ void Soft_PWM_Set_Duty ( pwm_channel_t channel, uint8_t duty )
     {
         return;
     }
+    
+    if (duty > PWM_RESOLUTION)
+    {
+        return;
+    }
+    
     for (uint8_t i = 0; i < PWM_CHANNEL_MAX; i++)
     {
         if ( channel == i)

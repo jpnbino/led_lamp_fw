@@ -15,7 +15,7 @@
 #define ARRAYSIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
 static uint8_t brightness;
-uint8_t const set_brightness[5] = {30,80,120,200,255};
+uint8_t const set_brightness[5] = {10,20,30,50,100};
 
 static light_t light_brightness;
 static light_t light_ratio;
@@ -66,7 +66,7 @@ void Event_Turn_Off_Handler( void )
 {
     light_t light = { 0,0 };
     Set_Light_Brightness(light);
-
+    
     /* Enters Sleep Mode */
     VREGCONbits.VREGPM = 1;
     SLEEP();
@@ -228,5 +228,4 @@ void Book_Lamp_App ( void )
         asm("reset");
         break;
     }
-
 }
