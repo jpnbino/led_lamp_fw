@@ -61,6 +61,13 @@ void Event_Turn_Off_Handler( void )
     light_t light = { 0,0 };
     Set_Light_Brightness(light);
     
+    /* The delay avoid the interruption on the button from happening*/
+    time_t delay_start;
+    time_t const delay = 1000;
+    delay_start = Time_Now();
+    while (Time_Passed(delay_start) < delay)
+        ;
+        
     Enter_Low_Power_Mode(SLEEP_MODE);
 }
 
