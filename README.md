@@ -1,4 +1,4 @@
-#LED LAMP
+# LED LAMP
 LED lamp is a small project that started with the idea of adding more functionalities for my book lamp. It happened that I bought a led lamp with only one light intensity for each led color ( there was warm and cold white ) and it actually was too strong for reading and  therefore I needed a lighter intensity. Then I came up with the idea of replacing the controller of the book lamp with a small microchip microcontroller which was pin to pin compatible.
 
 ## The Hardware
