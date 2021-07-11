@@ -1,9 +1,4 @@
-/*
- * File:   button_events.h
- * Author: jpnbino
- *
- * Created on 31 de Mar�o de 2020, 23:01
- */
+
 
 #ifndef BUTTON_EVENTS_H
 #define	BUTTON_EVENTS_H
@@ -15,12 +10,12 @@ extern "C" {
     /**@TODO: Put here the time config for the events like double click time */
 
     typedef enum {
-        ST_CLICK_IDLE,                              /*!< Point X coordinate */
-        ST_CLICK_WAIT,                              /*!< Point X coordinate */
-        ST_CLICK_WAIT_DOUBLE,                       /*!< Point X coordinate */
-        ST_CLICK_SINGLE,                            /*!< Point X coordinate */
-        ST_CLICK_DOUBLE,
-        ST_CLICK_LONG,
+        ST_CLICK_IDLE,                              /*!< IDLE STATE */
+        ST_CLICK_WAIT,                              /*!< WAIT STATE */
+        ST_CLICK_WAIT_DOUBLE,                       /*!< WAIT DOUBLE CLICK STATE */
+        ST_CLICK_SINGLE,                            /*!< SINGLE CLICK STATE */
+        ST_CLICK_DOUBLE,                            /*!< DOUBLE CLICK STATE */
+        ST_CLICK_LONG,                              /*!< LONG CLICK STATE */
     }
     click_state_t;
 

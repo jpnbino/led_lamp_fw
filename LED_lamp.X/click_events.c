@@ -15,9 +15,12 @@ click_state_t Get_Click_Event ( void )
 
     static click_state_t state = ST_CLICK_IDLE;
 
+    Button_Scan( 0 );
+    
     switch ( state )
     {
     case ST_CLICK_IDLE:
+        
         if ( Button_Get_Pressed_Event() ==  BUTTON_EVENT_PRESSED)
         {
             double_click_timeout_start = Time_Now();
@@ -26,7 +29,9 @@ click_state_t Get_Click_Event ( void )
             state = ST_CLICK_WAIT;
         }
         break;
+        
     case ST_CLICK_WAIT:
+        
         if ( Button_Get_Released_Event() ==  BUTTON_EVENT_RELEASED)
         {
             state = ST_CLICK_WAIT_DOUBLE;
@@ -37,12 +42,15 @@ click_state_t Get_Click_Event ( void )
             state =  ST_CLICK_LONG;
         }
         break;
+        
     case ST_CLICK_LONG:
+        
         if ( Button_Get_Released_Event() ==  BUTTON_EVENT_RELEASED)
         {
             state = ST_CLICK_IDLE;
         }
         break;
+        
     case ST_CLICK_WAIT_DOUBLE:
 
         if ( Button_Get_Pressed_Event() ==  BUTTON_EVENT_PRESSED)
@@ -56,16 +64,23 @@ click_state_t Get_Click_Event ( void )
         }
 
         break;
+        
     case ST_CLICK_SINGLE:
+        
         state = ST_CLICK_IDLE;
         break;
+        
     case ST_CLICK_DOUBLE:
+        
         state = ST_CLICK_IDLE;
         break;
+        
     default:
         break;
 
     }
 
+    Button_Clear_Events();
+    
     return state;
 }

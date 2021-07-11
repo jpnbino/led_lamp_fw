@@ -1,16 +1,10 @@
 #include <stdlib.h>
 
-/* For sleep mode*/
-#include <pic.h>
-
 #include "book_lamp_app.h"
-#include "driver_button.h"
-#include "soft_pwm.h"
 #include "systick.h"
 #include "click_events.h"
 #include "light.h"
-#include "mcc_generated_files/pin_manager.h"
-#include "mcc_generated_files/interrupt_manager.h"
+#include "low_power/low_power.h"
 
 #define ARRAYSIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
@@ -67,9 +61,14 @@ void Event_Turn_Off_Handler( void )
     light_t light = { 0,0 };
     Set_Light_Brightness(light);
     
-    /* Enters Sleep Mode */
-    VREGCONbits.VREGPM = 1;
-    SLEEP();
+    /* The delay avoid the interruption on the button from happening*/
+    time_t delay_start;
+    time_t const delay = 1000;
+    delay_start = Time_Now();
+    while (Time_Passed(delay_start) < delay)
+        ;
+        
+    Enter_Low_Power_Mode(SLEEP_MODE);
 }
 
 
@@ -104,17 +103,22 @@ void Event_Change_Temperature_Handler( void )
 
 }
 
+/**
+ @brief Read click button events.
+
+ @param None
+
+ @return check event_t
+
+*/
 event_t Get_Event ( void )
 {
     event_t event = EVENT_NONE;
-
     click_state_t click_state = ST_CLICK_IDLE;
 
     static uint8_t start_repeat = 0;
     static time_t hold_time_start;
     time_t const hold_timeout = 700;
-
-    Button_Scan( 0 );
 
     click_state = Get_Click_Event();
 
@@ -128,6 +132,7 @@ event_t Get_Event ( void )
         event =   EVENT_DOUBLE_CLICK;
     }
 
+    /* Handles the case in which the button is held pressed.*/
     if ( click_state == ST_CLICK_LONG )
     {
         if ( start_repeat )
@@ -145,7 +150,6 @@ event_t Get_Event ( void )
         }
     }
 
-    Button_Clear_Events();
     return event;
 }
 
